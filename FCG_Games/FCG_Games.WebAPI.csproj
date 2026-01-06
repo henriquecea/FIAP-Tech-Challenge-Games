@@ -8,14 +8,18 @@
 
   <ItemGroup>
     <PackageReference Include="Elastic.Clients.Elasticsearch" Version="8.19.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.22" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.22">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FCG_Games.Application\FCG_Games.Application.csproj" />
     <ProjectReference Include="..\FCG_Games.Domain\FCG_Games.Domain.csproj" />
+    <ProjectReference Include="..\FCG_Games.Infrastructure\FCG_Games.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
