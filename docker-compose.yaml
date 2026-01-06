@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  sql-fcg-games:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql-fcg-games
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "NovaSenhaForte123!"
+      MSSQL_PID: "Developer"
+    ports:
+      - "14332:1433"
+    volumes:
+      - sql_fcg_games_data:/var/opt/mssql
+
+  sql-tools-fcg-games:
+    image: mcr.microsoft.com/mssql-tools
+    container_name: sql-tools-fcg-games
+    depends_on:
+      - sql-fcg-games
+    entrypoint: /bin/bash
+    command: >
+      -c "
+      echo 'Aguardando SQL Server...';
+      until /opt/mssql-tools/bin/sqlcmd -S sql-fcg-games -U sa -P 'NovaSenhaForte123!' -Q 'SELECT 1' &> /dev/null; do
+        sleep 2;
+      done;
+      echo 'SQL Server pronto. Criando banco se não existir...';
+      /opt/mssql-tools/bin/sqlcmd -S sql-fcg-games -U sa -P 'NovaSenhaForte123!' -Q \"IF DB_ID('fcg-games') IS NULL CREATE DATABASE [fcg-games]\"
+      "
+
+  elastic-fcg-games:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    container_name: elastic-fcg-games
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9201:9200"
+    volumes:
+      - elastic_fcg_games_data:/usr/share/elasticsearch/data
+
+volumes:
+  sql_fcg_games_data:
+  elastic_fcg_games_data:
