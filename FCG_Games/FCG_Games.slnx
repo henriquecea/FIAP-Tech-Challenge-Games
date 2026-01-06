@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="../FCG_Games.Application/FCG_Games.Application.csproj" />
+  <Project Path="../FCG_Games.Domain/FCG_Games.Domain.csproj" />
+  <Project Path="../FCG_Games.Infrastructure/FCG_Games.Infrastructure.csproj" />
+  <Project Path="../FCG_Games.Test/FCG_Games.Test.csproj" />
+  <Project Path="FCG_Games.WebAPI.csproj" />
+</Solution>
