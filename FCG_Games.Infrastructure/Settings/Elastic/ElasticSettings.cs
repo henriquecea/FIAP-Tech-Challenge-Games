@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FCG_Games.Domain.Interface.Settings;
 
-namespace FCG_Games.Infrastructure.Settings.Elastic
+namespace FCG_Games.Infrastructure.Settings.Elastic;
+
+public class ElasticSettings : IElasticSettings
 {
-    internal class ElasticSettings
-    {
-    }
+    public string Uri => "http://localhost:9200";
 }
