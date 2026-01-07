@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FCG_Games.Domain\FCG_Games.Domain.csproj" />
+    <ProjectReference Include="..\FCG_Games.Infrastructure\FCG_Games.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

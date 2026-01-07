@@ -1,8 +1,11 @@
 using FCG_Games.Application.Service;
+using FCG_Games.Domain.Interface.Client;
 using FCG_Games.Domain.Interface.Repository;
 using FCG_Games.Domain.Interface.Service;
+using FCG_Games.Domain.Model.ElasticSearch;
 using FCG_Games.Infrastructure.Data;
 using FCG_Games.Infrastructure.Repository;
+using FCG_Games.Infrastructure.Settings.Elastic;
 using FCG_Games.WebAPI.Extension;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,13 +28,20 @@ builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
+builder.Services.AddScoped<GameElasticSeeder>();
+builder.Services.AddScoped<IElasticClient<GameElasticDocument>, ElasticClient<GameElasticDocument>>();
+
 var app = builder.Build();
 
-// Aplicar migrações pendentes ao iniciar a aplicações
 using (var scope = app.Services.CreateScope())
 {
+    // Aplicar migrações pendentes ao iniciar a aplicações
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
+
+    // Popular o ElasticSearch com os dados do banco relacional
+    var seeder = scope.ServiceProvider.GetRequiredService<GameElasticSeeder>();
+    await seeder.SeedAsync();
 }
 
 app.UseSwagger();
