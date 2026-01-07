@@ -9,26 +9,28 @@ public interface IGameService
     /// Retrieves all games asynchronously.
     /// </summary>
     /// <returns>A collection of all game models.</returns>
-    Task<IEnumerable<GameModel>> GetAllAsync();
+    Task<IActionResult> GetAllAsync();
 
     /// <summary>
-    /// Retrieves a game by its ID.
+    /// Search a random game recommendation
     /// </summary>
-    /// <param name="gameId">The ID of the game to retrieve.</param>
-    /// <returns>The game model with the specified ID.</returns>
-    Task<GameModel> GetById(int gameId);
+    /// <returns></returns>
+    Task<IActionResult> RandomGameRecomendation();
 
     /// <summary>
-    /// Creates a new game.
+    /// Make a purchase of a game by its ID
     /// </summary>
-    /// <param name="gameReq">The game data to create.</param>
-    /// <returns>The action result of the creation process.</returns>
-    Task<IActionResult> Create(GameModel gameReq);
+    /// <param name="gameId"></param>
+    /// <returns></returns>
+    Task<IActionResult> BuyGameById(int gameId, PurchaseGameModel purchaseDto);
 
-    /// <summary>
-    /// Deletes a game by its ID.
-    /// </summary>
-    /// <param name="gameId">The ID of the game to delete.</param>
-    /// <returns>The action result of the deletion process.</returns>
-    Task<IActionResult> DeleteById(int gameId);
+    #region Elastic Search
+
+    Task<object?> SearchGames(string name, string gender);
+
+    Task<object?> SuggestGamesByHistory(string favoriteGender);
+
+    Task<object?> GetMostPopularGames();
+
+    #endregion
 }

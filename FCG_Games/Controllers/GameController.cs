@@ -1,6 +1,5 @@
 ﻿using FCG_Games.Domain.Interface.Service;
 using FCG_Games.Domain.Model;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FCG_Games.WebAPI.Controllers;
@@ -9,29 +8,31 @@ namespace FCG_Games.WebAPI.Controllers;
 [Route("api/[controller]")]
 public class GameController(IGameService gameService) : ControllerBase
 {
-    [Authorize(Roles = "Admin")]
-    [HttpPost("create")]
-    public Task<IActionResult> Create(GameModel gameReq)
-    {
-        throw new NotImplementedException();
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpDelete()]
-    public Task<IActionResult> DeleteById(int gameId)
-    {
-        throw new NotImplementedException();
-    }
-
     [HttpGet()]
-    public Task<IEnumerable<GameModel>> GetAllAsync()
-    {
-        throw new NotImplementedException();
-    }
+    public async Task<IActionResult> GetAllAsync() =>
+        await gameService.GetAllAsync();
 
-    [HttpGet("{gameId}")]
-    public Task<GameModel> GetById(int gameId)
-    {
-        throw new NotImplementedException();
-    }
+    [HttpGet("random")]
+    public async Task<IActionResult> RandomGameRecomendation() =>
+        await gameService.RandomGameRecomendation();
+
+    [HttpPost("buy/{gameId}")]
+    public async Task<IActionResult> BuyGameById(int gameId, [FromBody] PurchaseGameModel purchaseDto) =>
+        await gameService.BuyGameById(gameId, purchaseDto);
+
+    #region Elastic Search
+
+    [HttpGet("elastic/search")]
+    public async Task<IActionResult> SearchGames([FromQuery] string name, [FromQuery] string gender) =>
+        Ok(await gameService.SearchGames(name, gender));
+
+    [HttpGet("elastic/suggest")]
+    public async Task<IActionResult> SuggestGames([FromQuery] string favoriteGender) =>
+        Ok(await gameService.SuggestGamesByHistory(favoriteGender));
+
+    [HttpGet("elastic/top")]
+    public async Task<IActionResult> GetMostPopularGames() =>
+        Ok(await gameService.GetMostPopularGames());
+
+    #endregion
 }
