@@ -11,6 +11,15 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddApplicationInsightsTelemetry(options =>
+{
+    options.EnableAdaptiveSampling = false;
+});
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddApplicationInsights();
+
 // Serviços customizados
 builder.AddSwagger();
 builder.AddJwtAuthentication();
@@ -27,6 +36,8 @@ builder.Services.AddScoped<IGameService, GameService>();
 
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+builder.Services.AddScoped<IGameMessageService, GameMessageService>();
 
 builder.Services.AddScoped<GameElasticSeeder>();
 builder.Services.AddScoped<IElasticClient<GameElasticDocument>, ElasticClient<GameElasticDocument>>();

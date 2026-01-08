@@ -1,6 +1,5 @@
-﻿using FCG_Games.Domain.Model;
+﻿using FCG_Games.Domain.Model.DTO;
 using Microsoft.AspNetCore.Mvc;
-
 namespace FCG_Games.Domain.Interface.Service;
 
 public interface IGameService
@@ -15,6 +14,20 @@ public interface IGameService
     /// Search a random game recommendation
     /// </summary>
     /// <returns></returns>
+    /// 
+    Task<GameResponse?> GetByIdAsync(Guid id);
+
+    /// <summary>
+    /// Create a new game asynchronously.
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    Task<GameResponse> CreateAsync(CreateGameRequest request);
+
+    /// <summary>
+    /// Choose a random game recommendation
+    /// </summary>
+    /// <returns></returns>
     Task<IActionResult> RandomGameRecomendation();
 
     /// <summary>
@@ -22,7 +35,7 @@ public interface IGameService
     /// </summary>
     /// <param name="gameId"></param>
     /// <returns></returns>
-    Task<IActionResult> BuyGameById(int gameId, PurchaseGameModel purchaseDto);
+    Task<GameResponse> BuyGameByIdAsync(Guid gameId);
 
     #region Elastic Search
 

@@ -1,7 +1,8 @@
-﻿using FCG_Games.Domain.Interface.Client;
+﻿using FCG_Games.Domain.Entity;
+using FCG_Games.Domain.Interface.Client;
 using FCG_Games.Domain.Interface.Repository;
 using FCG_Games.Domain.Interface.Service;
-using FCG_Games.Domain.Model;
+using FCG_Games.Domain.Model.DTO;
 using FCG_Games.Domain.Model.ElasticSearch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,7 @@ namespace FCG_Games.Application.Service;
 
 public class GameService(ILogger<GameService> logger,
                          IGameRepository gameRepository,
+                         IGameMessageService gameMessageService,
                          IElasticClient<GameElasticDocument> elasticClient)
     : IGameService
 {
@@ -36,6 +38,21 @@ public class GameService(ILogger<GameService> logger,
         }
     }
 
+    public async Task<GameResponse?> GetByIdAsync(Guid id)
+    {
+        var game = await gameRepository.GetByIdAsync(id);
+
+        if (game is null) return null;
+
+        return new GameResponse
+        {
+            Id = game.Id,
+            Name = game.Name,
+            Gender = game.Gender,
+            Value = game.Value
+        };
+    }
+
     public async Task<IActionResult> RandomGameRecomendation()
     {
         try
@@ -60,9 +77,44 @@ public class GameService(ILogger<GameService> logger,
         }
     }
 
-    public Task<IActionResult> BuyGameById(int gameId, PurchaseGameModel purchaseDto)
+    public async Task<GameResponse> CreateAsync(CreateGameRequest request)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var game = new GameEntity(request.Name, request.Gender)
+            {
+                Id = Guid.NewGuid(),
+                Value = request.Value
+            };
+
+            await gameRepository.AddAsync(game);
+            await gameRepository.SaveChangesAsync();
+
+            return new GameResponse
+            {
+                Id = game.Id,
+                Name = game.Name,
+                Gender = game.Gender,
+                Value = game.Value
+            };
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Erro ao criar game.");
+            throw; // deixa o controller tratar e devolver 400/500
+        }
+    }
+
+    public async Task<GameResponse> BuyGameByIdAsync(Guid gameId)
+    {
+        var game = await GetByIdAsync(gameId);
+
+        if (game is null)
+            throw new KeyNotFoundException("Game não encontrado.");
+
+        await gameMessageService.SendMessageAsync(game);
+
+        return game;
     }
 
     #endregion
@@ -80,3 +132,4 @@ public class GameService(ILogger<GameService> logger,
 
     #endregion
 }
+
