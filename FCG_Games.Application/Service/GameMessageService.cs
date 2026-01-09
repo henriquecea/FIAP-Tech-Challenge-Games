@@ -8,15 +8,13 @@ namespace FCG_Games.Application.Service;
 
 public class GameMessageService : IGameMessageService
 {
-    private readonly IConfiguration _config;
     private readonly string _connectionString;
     private readonly ServiceBusClient _client;
     private readonly string _queueName = "games";
 
-    public GameMessageService(IConfiguration config)
+    public GameMessageService()
     {
-        _config = config;
-        _connectionString = this._config.GetValue<string>("AzureServiceBus:ConnectionString");
+        _connectionString = Environment.GetEnvironmentVariable("AzureServiceBus::ConnectionString");
         _client = new ServiceBusClient(_connectionString);
     }
 
